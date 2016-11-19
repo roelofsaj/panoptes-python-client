@@ -1,3 +1,4 @@
+from builtins import next
 import datetime
 import requests
 import time
@@ -31,7 +32,7 @@ class Project(PanoptesObject):
         if not id and not slug:
             return None
         try:
-            return cls.where(id=id, slug=slug).next()
+            return next(cls.where(id=id, slug=slug))
         except StopIteration:
             raise PanoptesAPIException(
                 "Could not find project with slug='{}'".format(slug)

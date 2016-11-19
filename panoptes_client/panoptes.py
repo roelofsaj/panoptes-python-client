@@ -1,3 +1,6 @@
+from builtins import next
+from builtins import str
+from builtins import object
 import requests
 import os
 
@@ -152,9 +155,7 @@ class Panoptes(object):
             json_response = response.json()
             if 'errors' in json_response:
                 raise PanoptesAPIException(', '.join(
-                    map(lambda e: e.get('message', ''),
-                        json_response['errors']
-                       )
+                    [e.get('message', '') for e in json_response['errors']]
                 ))
             elif 'error' in json_response:
                 raise PanoptesAPIException(json_response['error'])
@@ -390,7 +391,7 @@ class Panoptes(object):
 class PanoptesObject(object):
     @classmethod
     def url(cls, *args):
-        return '/'.join(['', cls._api_slug] + [ unicode(a) for a in args if a ])
+        return '/'.join(['', cls._api_slug] + [ str(a) for a in args if a ])
 
     @classmethod
     def get(cls, path, params={}, headers={}):
@@ -436,7 +437,7 @@ class PanoptesObject(object):
     def find(cls, _id):
         if not _id:
             return None
-        return cls.where(id=_id).next()
+        return next(cls.where(id=_id))
 
     @classmethod
     def paginated_results(cls, response, etag):
@@ -495,7 +496,7 @@ class PanoptesObject(object):
         out = []
         for key in attributes:
             if type(key) == dict:
-                for subkey, subattributes in key.items():
+                for subkey, subattributes in list(key.items()):
                     if (
                         subkey == 'links' and
                         hasattr(self, 'links') and
@@ -551,7 +552,7 @@ class ResultPaginator(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         if self.object_index >= self.object_count:
             if self.next_href:
                 response, _ = Panoptes.client().get(self.next_href)
@@ -590,7 +591,7 @@ class LinkResolver(object):
         object_class = LinkResolver.types.get(name)
         linked_object = self.raw[name]
         if type(linked_object) == list:
-            return map(lambda o: object_class.find(o), linked_object)
+            return [object_class.find(o) for o in linked_object]
         else:
             return object_class.find(linked_object)
 
@@ -606,7 +607,7 @@ class LinkResolver(object):
 
     def _savable_dict(self, edit_attributes):
         out = []
-        for key, value in self.raw.items():
+        for key, value in list(self.raw.items()):
             if not key in edit_attributes:
                 continue
             if type(key) == list:

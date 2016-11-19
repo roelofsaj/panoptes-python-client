@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 from panoptes_client.panoptes import PanoptesObject, LinkResolver
 from panoptes_client.subject import Subject
 
@@ -28,7 +30,7 @@ class SubjectSet(PanoptesObject):
 
         for _subjects_batch in [
             _subjects[i:i+batch_size]
-            for i in xrange(0, len(_subjects), batch_size)
+            for i in range(0, len(_subjects), batch_size)
         ]:
             self.post(
                 '{}/links/subjects'.format(self.id),
@@ -40,7 +42,7 @@ class SubjectSet(PanoptesObject):
 
         for _subjects_batch in [
             _subjects[i:i+batch_size]
-            for i in xrange(0, len(_subjects), batch_size)
+            for i in range(0, len(_subjects), batch_size)
         ]:
             _subjects_ids = ",".join(_subjects_batch)
             self.delete(
@@ -55,7 +57,7 @@ class SubjectSet(PanoptesObject):
         for subject in subjects:
             if not (
                 isinstance(subject, Subject)
-                or isinstance(subject, (int, str, unicode,))
+                or isinstance(subject, (int, str, str))
             ):
                 raise TypeError
 

@@ -1,3 +1,5 @@
+from builtins import zip
+from builtins import range
 import imghdr
 import requests
 import time
@@ -38,7 +40,7 @@ class Subject(PanoptesObject):
                 continue
 
             try:
-                for image_type, url in location.items():
+                for image_type, url in list(location.items()):
                     image_data = image_file.read()
                     for attempt in range(UPLOAD_RETRY_LIMIT):
                         try:
@@ -64,7 +66,7 @@ class Subject(PanoptesObject):
             self.locations.append(location)
             self._image_files.append(None)
             return
-        elif type(location) in (str, unicode):
+        elif type(location) in (str, str):
             f = open(location, 'rb')
         else:
             f = location

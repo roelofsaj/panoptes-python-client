@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 from panoptes_client.panoptes import PanoptesObject, LinkResolver
 from panoptes_client.subject import Subject
 from panoptes_client.subject_set import SubjectSet
@@ -26,7 +28,7 @@ class Workflow(PanoptesObject):
 
         for _subject_sets_batch in [
             _subject_sets[i:i+batch_size]
-            for i in xrange(0, len(_subject_sets), batch_size)
+            for i in range(0, len(_subject_sets), batch_size)
         ]:
             self.post(
                 '{}/links/subject_sets'.format(self.id),
@@ -49,7 +51,7 @@ class Workflow(PanoptesObject):
         for subject_set in subject_sets:
             if not (
                 isinstance(subject_set, SubjectSet)
-                or isinstance(subject_set, (int, str, unicode,))
+                or isinstance(subject_set, (int, str, str))
             ):
                 raise TypeError
 
